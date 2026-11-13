@@ -62,7 +62,7 @@
         <button id="copyCsvBtn" type="button" disabled>CSV 내용 복사</button>
         <button id="resetBtn" type="button">초기화</button>
       </div>
-      <p class="hint">파일명에는 올바른스쿼트정면, 올바른스쿼트옆모습, 잘못된스쿼트무릎모임, 잘못된스쿼트허리말림, 잘못된스쿼트벗윙크 중 하나를 앞에 적어 주세요. 괄호와 띄어쓰기는 없어도 됩니다. 예: 잘못된스쿼트벗윙크_1.jpg<br />사진과 추론은 브라우저에서 처리되며 사진 파일은 외부로 전송하지 않습니다.</p>
+      <p class="hint">파일명에는 올바른스쿼트정면, 올바른스쿼트옆모습, 잘못된스쿼트무릎모임, 잘못된스쿼트허리골반말림 중 하나를 앞에 적어 주세요. 괄호와 띄어쓰기는 없어도 됩니다. 예: 잘못된스쿼트벗윙크_1.jpg<br />사진과 추론은 브라우저에서 처리되며 사진 파일은 외부로 전송하지 않습니다.</p>
       <div id="status" class="status" role="status" aria-live="polite">포즈 모델을 불러오는 중입니다…</div>
       <div id="loadDetails" class="hint"></div>
       <div id="csvHelp" class="hint" aria-live="polite" hidden></div>
@@ -109,8 +109,8 @@
     const METADATA_URL = './metadata.json';
     const MIN_CONFIDENCE = 0.6;
     const CLASS_NAMES = [
-      '올바른스쿼트정면', '올바른스쿼트옆모습',
-      '잘못된스쿼트허리말림', '잘못된스쿼트무릎모임', '잘못된스쿼트벗윙크'
+      '올바른스쿼트(정면)', '올바른스쿼트(옆모습)',
+      '잘못된스쿼트(무릎모임)', '잘못된스쿼트(허리골반말림)'
     ];
     const $ = id => document.getElementById(id);
     const imageInput = $('imageInput');
@@ -225,10 +225,10 @@
         stage = '포즈 추출';
         const { pose, posenetOutput } = await model.estimatePose(image, false);
         if (!posenetOutput || !posenetOutput.length) throw new Error('포즈 출력이 비었습니다.');
-        stage = '5개 클래스 예측';
+        stage = '4개 클래스 예측';
         const predictions = await model.predict(posenetOutput);
         if (!Array.isArray(predictions) || predictions.length !== CLASS_NAMES.length) {
-          throw new Error('예측 결과 개수가 5개가 아닙니다.');
+          throw new Error('예측 결과 개수가 4개가 아닙니다.');
         }
         const best = predictions.reduce((a, b) => Number(b.probability) > Number(a.probability) ? b : a);
         const confidence = Number(best.probability);
