@@ -390,7 +390,7 @@
       </div>
     </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8.6/dist/teachablemachine-pose.min.js"></script>
 
     <script>
@@ -433,43 +433,22 @@
       }
 
       function classifyLabel(rawLabel, knownLabels = []) {
-        const label = normalizeLabel(rawLabel);
-        const known = knownLabels.map(normalizeLabel);
+  const label = normalizeLabel(rawLabel);
 
-        if (!label && known.length === 0) return 'unknown';
+  if (label.includes('올바른스쿼트')) {
+    return 'correct';
+  }
 
-        if (
-          label.includes('올바른') ||
-          label.includes('correct') ||
-          label.includes('good') ||
-          label.includes('정상') ||
-          label.includes('좋음') ||
-          label.includes('normal')
-        ) return 'correct';
+  if (label.includes('무릎모임')) {
+    return 'bad_knee';
+  }
 
-        if (
-          label.includes('허리') && label.includes('말림') ||
-          label.includes('backbend') ||
-          label.includes('허리말림') ||
-          label.includes('back') ||
-          label.includes('bend')
-        ) return 'bad_back';
+  if (label.includes('허리골반말림')) {
+    return 'bad_back';
+  }
 
-        if (
-          label.includes('무릎') && label.includes('모임') ||
-          label.includes('kneecollapse') ||
-          label.includes('무릎모임') ||
-          label.includes('knee') ||
-          label.includes('collapse')
-        ) return 'bad_knee';
-
-        if (
-          label.includes('벗윙크') ||
-          label.includes('buttwink') ||
-          label.includes('butt') ||
-          label.includes('wink')
-        ) return 'bad_buttwink';
-
+  return 'unknown';
+}
         // 특정 예측 클래스의 이름만으로 유형을 식별한다.
         // 다른 클래스의 이름을 합쳐 판단하면 잘못 분류될 수 있으므로 사용하지 않는다.
         return 'unknown';
@@ -558,22 +537,16 @@
           probabilityBadge.textContent = `확률: ${percentageText}`;
           feedbackBox.classList.add('hidden');
         } else if (result.category === 'bad_back') {
-          resultTitle.textContent = '허리 말림이 발견되었어요!';
+          resultTitle.textContent = '허리·골반 말림이 발견되었어요!';
           resultTitle.className = 'result-bad';
-          resultDescription.textContent = '허리 말림이 발견되었어요!';
+          resultDescription.textContent =
+          '스쿼트할 때 허리나 골반이 안쪽으로 말리는 자세예요.';
           probabilityBadge.className = 'probability probability-bad';
           probabilityBadge.textContent = `확률: ${percentageText}`;
-          feedbackText.textContent = '허리를 곧게 세우고 척추 중립을 유지해 주세요. 상체가 너무 앞으로 말리지 않도록 천천히 내려가세요.';
+          feedbackText.textContent =
+          '허리를 곧게 세우고 척추 중립을 유지하며, 골반이 아래쪽으로 말리지 않는 범위까지 천천히 앉아 보세요.';
           feedbackBox.classList.remove('hidden');
-        } else if (result.category === 'bad_buttwink') {
-          resultTitle.textContent = '벗윙크 자세가 발견되었어요!';
-          resultTitle.className = 'result-bad';
-          resultDescription.textContent = '엉덩이와 무릎이 너무 과하게 틀어지는 자세예요.';
-          probabilityBadge.className = 'probability probability-bad';
-          probabilityBadge.textContent = `확률: ${percentageText}`;
-          feedbackText.textContent = '엉덩이와 무릎의 각도를 안정적으로 유지하고, 허리와 골반을 정렬해 주세요.';
-          feedbackBox.classList.remove('hidden');
-        } else if (result.category === 'bad_knee') {
+       } else if (result.category === 'bad_knee') {
           resultTitle.textContent = '무릎이 안쪽으로 모이는 자세가 발견되었어요!';
           resultTitle.className = 'result-bad';
           resultDescription.textContent = '무릎이 안쪽으로 모이는 자세가 발견되었어요!';
